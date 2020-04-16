@@ -55,9 +55,9 @@ class BatchCreator(data.Dataset):
         """解析数据"""
         for input_data in input:
             with h5py.File(input_data, 'r') as raw:
-                self.input_data.append(torch.from_numpy((raw['image'][()].astype(np.float32)-128) / 33.0))
-                self.label_data.append(torch.from_numpy(raw['label'][()]))
-                self.coor.append(raw['coor'][()])
+                self.input_data.append((raw['image'][()].astype(np.float32)-128) / 33.0)
+                self.label_data.append(raw['label'][()])
+                self.coor.append(raw['coor'][()].astype(np.uint8))
                 self.seed.append(logit(np.full(list(raw['label'][()].shape), 0.05, dtype=np.float32)))
 
     def __getitem__(self, idx):
