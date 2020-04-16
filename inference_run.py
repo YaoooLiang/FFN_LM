@@ -19,30 +19,30 @@ args = parser.parse_args()
 
 
 def run():
-    """创建模型"""
+    
     model = FFN(in_channels=4, out_channels=1, input_size=args.input_size, delta=args.delta, depth=args.depth).cuda()
 
     assert os.path.isfile(args.model)
 
-    """载入模型"""
+    
     model.load_state_dict(torch.load(args.model))
     model.eval()
 
-    """读取数据"""
+    
     with h5py.File(args.data, 'r') as f:
         images = (f['/image'][()].astype(np.float32) - 128) / 33
         # labels = g['label'].value
 
-    """创建分割实例"""
+    
     canva = Canvas(model, images, args.input_size, args.delta, args.seg_thr, args.mov_thr, args.act_thr)
-    """开始分割"""
+    
     canva.segment_at((159, 121, 158))
 
 
     #canva.segment_all()
-    """获取结果"""
+    
     # result = canva.segmentation
-    # """存储结果"""
+    # 
     # max_value = result.max()
     # indice, count = np.unique(result, return_counts=True)
     # result[result == -1] = 0
