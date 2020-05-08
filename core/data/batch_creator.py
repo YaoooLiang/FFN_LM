@@ -3,8 +3,8 @@ from typing import Sequence, List
 import h5py
 from .utils import *
 import random
-import imageio
-import imgaug as ia
+#import imageio
+#import imgaug as ia
 import numpy as np
 #from imgaug import augmenters as iaa
 
