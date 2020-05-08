@@ -153,7 +153,7 @@ def run():
         """
 
 
-        if (cnt % 1000) == 0:
+        if (cnt % 100) == 0:
             tp = fp = tn = fn = 0
             #t_last = t_curr
             #best_loss = loss.item()
