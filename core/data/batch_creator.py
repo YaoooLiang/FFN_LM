@@ -3,6 +3,49 @@ from typing import Sequence, List
 import h5py
 from .utils import *
 import random
+import imageio
+import imgaug as ia
+import numpy as np
+from imgaug import augmenters as iaa
+
+
+def geometric_transform(data1, data2):
+        t1 = random.choice([np.fliplr, np.flipud])
+        data1 = t1(data1)
+        data2 = t1(data2)
+
+        t2 = random.choice([np.fliplr, np.flipud])
+        data1 = t2(data1)
+        data2 = t2(data2)
+        degree = np.random.choice([0, 180])
+        data1 = ndimage.rotate(data1, degree)
+        data2 = ndimage.rotate(data2, degree)
+
+        return data1, data2
+
+
+def hue_transform1(data1):
+    z = data1.shape[0]
+    degree = random.randrange(8, 12, 1)
+    hue_m = degree / 10
+    aug = iaa.MultiplyHueAndSaturation((hue_m, hue_m))
+
+    for stack in range(z):
+        data1[stack] = aug.augment_image(data1[stack])
+
+    return data1
+
+
+def hue_transform2(data1):
+    z = data1.shape[0]
+    para = random.randrange(-15, 15, 1)
+
+    aug = iaa.AddToHueAndSaturation((para, para))
+
+    for stack in range(z):
+        data1[stack] = aug.augment_image(data1[stack])
+
+    return data1
 
 
 class BatchCreator(data.Dataset):
@@ -51,27 +94,50 @@ class BatchCreator(data.Dataset):
         self.num_classes = 2
         self.reset = True
 
+
     def parse_h5py(self, input):
         """解析数据"""
         for input_data in input:
             with h5py.File(input_data, 'r') as raw:
-                self.input_data.append((raw['image'][()].astype(np.float32)-128) / 33.0)
+                self.input_data.append(raw['image'][()])#.astype(np.float32)-128) / 33.0)
                 self.label_data.append(raw['label'][()])
-                self.coor.append(raw['coor'][()].astype(np.uint8))
+                self.coor.append(raw['coor'][()])#.astype(np.uint8))
                 self.seed.append(logit(np.full(list(raw['label'][()].shape), 0.05, dtype=np.float32)))
 
     def __getitem__(self, idx):
         """根据记载的label坐标从250x250x250的立方中根据索引截取49x49x49的patch"""
         self.coor_patch = self.coor[self.data_idx][idx]
 
-        self.image_patch = center_crop_and_pad(self.input_data[self.data_idx], self.coor_patch, self.seed_shape).transpose(3, 0, 1, 2)
+        self.image_patch = center_crop_and_pad(self.input_data[self.data_idx], self.coor_patch, self.seed_shape)
         self.label_patch = center_crop_and_pad(self.label_data[self.data_idx], self.coor_patch, self.seed_shape)
+
+
+        self.image_patch ,self.label_patch = geometric_transform(self.image_patch, self.label_patch)
+
+
+        #self.image_patch = hue_transform1(self.image_patch)#.astype('uint8'))
+        #self.image_patch = hue_transform2(self.image_patch)#.astype('uint8'))
+
+
+
+        #skimage.io.imsave('./testinput/image_patch_{}.tif'.format(idx),  self.image_patch)
+        #skimage.io.imsave('./testinput/label_patch_{}.tif'.format(idx), self.label_patch)
+
+        self.image_patch =((self.image_patch.astype(np.float32) - 128) / 33.0)
+
+        #skimage.io.imsave('./testinput/image_patch_transed_{}.tif'.format(idx), self.image_patch)
+        self.image_patch = self.image_patch.transpose(3, 0, 1, 2)
+
         """保证中心为当前label"""
         self.label_patch = np.logical_and(self.label_patch > 0, np.equal(self.label_patch, self.label_patch[tuple(self.label_radii)]))
         self.label_patch = np.where(self.label_patch, np.ones(self.label_patch.shape)*0.95, np.ones(self.label_patch.shape)*0.05)
 
         self.seed_patch = center_crop_and_pad(self.seed[self.data_idx], self.coor_patch, self.seed_shape)
         self.seed_patch[tuple(self.label_radii)] = logit(0.95)
+
+        #skimage.io.imsave('./testinput/seed_patch_{}.tif'.format(idx), self.seed_patch)
+
+
 
         return self.image_patch, self.label_patch, self.seed_patch, self.coor_patch
 
