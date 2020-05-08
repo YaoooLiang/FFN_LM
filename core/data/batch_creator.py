@@ -6,7 +6,7 @@ import random
 import imageio
 import imgaug as ia
 import numpy as np
-from imgaug import augmenters as iaa
+#from imgaug import augmenters as iaa
 
 
 def geometric_transform(data1, data2):
@@ -17,12 +17,10 @@ def geometric_transform(data1, data2):
 
         #t2 = random.choice([np.fliplr, np.flipud])
         #data1 = t2(data1)
-        #data2 = t2(data2)
-
-
+        #data2 = t2(data2
         return data1, data2
 
-
+"""
 def hue_transform1(data1):
     z = data1.shape[0]
     degree = random.randrange(8, 12, 1)
@@ -45,7 +43,7 @@ def hue_transform2(data1):
         data1[stack] = aug.augment_image(data1[stack])
 
     return data1
-
+"""
 
 class BatchCreator(data.Dataset):
     def __init__(
