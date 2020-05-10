@@ -33,7 +33,7 @@ parser.add_argument('--input_size', default=(51, 51, 51), help ='input size')
 parser.add_argument('--resume', type=str, default="/home/xiaotx/2017EXBB/model/ffn_model_fov:51_delta:15_depth:12.pth", help='resume training')
 parser.add_argument('--save_path', type=str, default='/home/xiaotx/2017EXBB/model', help='model save path')
 parser.add_argument('--save_interval', type=str, default=1000, help='model save interval')
-parser.add_argument('--log_save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_log', help='model_log save path')
+parser.add_argument('--log_save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_log/', help='model_log save path')
 
 
 
