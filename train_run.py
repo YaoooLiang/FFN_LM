@@ -23,7 +23,7 @@ parser.add_argument('--deterministic', action='store_true',
 
 parser.add_argument('-train_data', '--train_data_dir', type=str, default='/home/xiaotx/2017EXBB/train_data/thick+dense+sparse/', help='training data')
 parser.add_argument('-b', '--batch_size', type=int, default=8, help='training batch size')
-parser.add_argument('--lr', type=float, default=1e-3/2, help='training learning rate')
+parser.add_argument('--lr', type=float, default=1e-3/3, help='training learning rate')
 parser.add_argument('--gamma', type=float, default=0.9, help='multiplicative factor of learning rate decay')
 parser.add_argument('--step', type=int, default=1e4*5, help='adjust learning rate every step')
 parser.add_argument('--depth', type=int, default=12, help='depth of ffn')
@@ -42,7 +42,7 @@ parser.add_argument('--interval', type=int, default=120, help='How often to save
 parser.add_argument('--iter', type=int, default=1e100, help='training iteration')
 
 
-
+parser.add_argument('--stream', type=int, default=2, help='job_stream')
 
 
 args = parser.parse_args()
@@ -197,7 +197,7 @@ def run():
             #best_loss = loss.item()
             input_size_r = list(args.input_size)
             delta_r = list(args.delta)
-            torch.save(model.state_dict(), os.path.join(args.save_path, 'ffn_model_fov:{}_delta:{}_depth:{}_recall{}.pth'.format(input_size_r [0],delta_r[0],args.depth,recall*100)))
+            torch.save(model.state_dict(), os.path.join(args.save_path, (str(args.stream) + 'ffn_model_fov:{}_delta:{}_depth:{}_recall{}.pth'.format(input_size_r [0],delta_r[0],args.depth,recall*100))))
             print('Precision: {:.2f}%, Recall: {:.2f}%, Accuracy: {:.2f}%, Model saved!'.format(
                 precision * 100, recall * 100, accuracy * 100))
 
