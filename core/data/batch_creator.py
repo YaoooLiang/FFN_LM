@@ -109,7 +109,7 @@ class BatchCreator(data.Dataset):
 
         self.label_patch = center_crop_and_pad(self.label_data[self.data_idx], self.coor_patch, self.seed_shape)
 
-        self.image_patch ,self.label_patch = geometric_transform(self.image_patch, self.label_patch)
+        #self.image_patch ,self.label_patch = geometric_transform(self.image_patch, self.label_patch)
 
 
 
