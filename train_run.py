@@ -122,7 +122,10 @@ def run():
     t_last = time.time()
     cnt = 0
     tp = fp = tn = fn = 0
+    
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    #optimizer = optim.SGD(model.parameters(), lr=1e-3)
+    #optimizer = adabound.AdaBound(model.parameters(), lr=1e-3, final_lr=0.1)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.step, gamma=args.gamma, last_epoch=-1)
 
 
