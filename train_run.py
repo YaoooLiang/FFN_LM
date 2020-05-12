@@ -124,7 +124,7 @@ def run():
     tp = fp = tn = fn = 0
     
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    #optimizer = optim.SGD(model.parameters(), lr=1e-3)
+    #optimizer = optim.SGD(model.parameters(), lr=1e-3) #momentum=0.9 
     #optimizer = adabound.AdaBound(model.parameters(), lr=1e-3, final_lr=0.1)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.step, gamma=args.gamma, last_epoch=-1)
 
@@ -156,6 +156,8 @@ def run():
 
         torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
         optimizer.step()
+        
+        
         seeds[...] = updated.detach().cpu().numpy()
 
         pred_mask = (updated >= logit(0.9)).detach().cpu().numpy()
