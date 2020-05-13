@@ -23,9 +23,9 @@ parser.add_argument('--deterministic', action='store_true',
 
 parser.add_argument('-train_data', '--train_data_dir', type=str, default='/home/xiaotx/2017EXBB/train_data/thick+dense+sparse/', help='training data')
 parser.add_argument('-b', '--batch_size', type=int, default=8, help='training batch size')
-parser.add_argument('--lr', type=float, default=1e-4, help='training learning rate')
+#parser.add_argument('--lr', type=float, default=1e-4, help='training learning rate')
 parser.add_argument('--gamma', type=float, default=0.9, help='multiplicative factor of learning rate decay')
-parser.add_argument('--step', type=int, default=1e4*2, help='adjust learning rate every step')
+#parser.add_argument('--step', type=int, default=1e4*2, help='adjust learning rate every step')
 parser.add_argument('--depth', type=int, default=12, help='depth of ffn')
 parser.add_argument('--delta', default=(15, 15, 15), help='delta offset')
 parser.add_argument('--input_size', default=(51, 51, 51), help ='input size')
@@ -42,7 +42,7 @@ parser.add_argument('--interval', type=int, default=120, help='How often to save
 parser.add_argument('--iter', type=int, default=1e100, help='training iteration')
 
 
-parser.add_argument('--stream', type=int, default=3, help='job_stream')
+parser.add_argument('--stream', type=int, default=4, help='job_stream')
 
 
 args = parser.parse_args()
@@ -123,10 +123,11 @@ def run():
     cnt = 0
     tp = fp = tn = fn = 0
     
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    #optimizer = optim.SGD(model.parameters(), lr=1e-3) #momentum=0.9 
+    #optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.SGD(model.parameters(), lr=1e-3) 
+    #momentum=0.9 
     #optimizer = adabound.AdaBound(model.parameters(), lr=1e-3, final_lr=0.1)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.step, gamma=args.gamma, last_epoch=-1)
+    #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.step, gamma=args.gamma, last_epoch=-1)
 
 
     """train_loop"""
@@ -174,7 +175,7 @@ def run():
         print('[Iter_{}:, loss: {:.4}, Precision: {:.2f}%, Recall: {:.2f}%, Accuracy: {:.2f}%]\r'.format(
             cnt, loss.item(), precision*100, recall*100, accuracy * 100))
 
-        scheduler.step()
+        #scheduler.step()
 
 
         """model_saving_(best_loss)"""
