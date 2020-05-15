@@ -42,7 +42,7 @@ parser.add_argument('--interval', type=int, default=120, help='How often to save
 parser.add_argument('--iter', type=int, default=1e100, help='training iteration')
 
 
-parser.add_argument('--stream', type=str, default = test_adam_speed, help='job_stream')
+parser.add_argument('--stream', type=str, default = 'test_adam_speed', help='job_stream')
 
 
 args = parser.parse_args()
