@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser(description='Train a network.')
 parser.add_argument('--deterministic', action='store_true',
     help='Run in fully deterministic mode (at the cost of execution speed).')
 
-parser.add_argument('-train_data', '--train_data_dir', type=str, default='./data/dense_sparse_thick/', help='training data')
+parser.add_argument('-train_data', '--train_data_dir', type=str, default='/home/xiaotx/2017EXBB/train_data/thick_dense_sparse_coord_d/', help='training data')
 parser.add_argument('-b', '--batch_size', type=int, default=8, help='training batch size')
 #parser.add_argument('--lr', type=float, default=1e-4, help='training learning rate')
 parser.add_argument('--gamma', type=float, default=0.9, help='multiplicative factor of learning rate decay')
@@ -37,9 +37,9 @@ parser.add_argument('--delta', default=(15, 15, 15), help='delta offset')
 parser.add_argument('--input_size', default=(51, 51, 51), help ='input size')
 
 parser.add_argument('--resume', type=str, default=None, help='resume training')
-parser.add_argument('--save_path', type=str, default='./model', help='model save path')
+parser.add_argument('--save_path', type=str, default='/home/xiaotx/2017EXBB/model', help='model save path')
 parser.add_argument('--save_interval', type=str, default=1000, help='model save interval')
-parser.add_argument('--log_save_path', type=str, default='./model/model_log/', help='model_log save path')
+parser.add_argument('--log_save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_log/', help='model_log save path')
 
 
 
@@ -223,7 +223,7 @@ def run():
         """model_saving_(iter)"""
 
 
-        if (cnt % args.save_interval) == 0 and args.rank == 0:
+        if (cnt % args.save_interval) == 0:
             tp = fp = tn = fn = 0
             #t_last = t_curr
             #best_loss = loss.item()
@@ -248,6 +248,7 @@ def run():
 
             f_o.close()
             f_l.close()
+
 
 
 if __name__ == "__main__":
