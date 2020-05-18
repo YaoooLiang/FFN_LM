@@ -223,7 +223,7 @@ def run():
         """model_saving_(iter)"""
 
 
-        if (cnt % args.save_interval) == 0:
+        if (cnt % args.save_interval) == 0 and args.rank == 0:
             tp = fp = tn = fn = 0
             #t_last = t_curr
             #best_loss = loss.item()
