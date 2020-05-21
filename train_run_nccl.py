@@ -141,7 +141,7 @@ def run(args):
         input_h5data_dict[index] = [(abs_path_training_data + sorted_files_train_data[index])]
         print(input_h5data_dict[index])
         train_dataset_dict[index] = BatchCreator(input_h5data_dict[index], args.input_size, delta=args.delta, train=True)
-        train_sampler_dict[index] = torch.utils.data.distributed.DistributedSampler(train_dataset_dict[index], num_replicas=world_size, rank=rank, shuffle=True)
+        train_sampler_dict[index] = torch.utils.data.distributed.DistributedSampler(train_dataset_dict[index], num_replicas=args.world_size, rank=args.rank, shuffle=True)
         train_loader_dict[index] = DataLoader(train_dataset_dict[index], num_workers=0, sampler=train_sampler_dict[index] , pin_memory=True)
         batch_it_dict[index] = get_batch(train_loader_dict[index], args.batch_size, args.input_size,
                                partial(fixed_offsets, fov_moves=train_dataset_dict[index].shifts))
