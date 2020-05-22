@@ -70,7 +70,7 @@ if not os.path.exists(args.save_path):
 def run():
 
     cudnn.benchmark = True
-    torch.cuda.set_device(args.local_rank)
+    #torch.cuda.set_device(args.local_rank)
     
     # will read env master_addr master_port world_size
     torch.distributed.init_process_group(backend='nccl', init_method="env://")
