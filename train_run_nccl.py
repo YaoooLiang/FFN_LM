@@ -43,6 +43,8 @@ parser.add_argument('--log_save_path', type=str, default='/home/xiaotx/2017EXBB/
 
 
 
+
+
 parser.add_argument('--clip_grad_thr', type=float, default=0.7, help='grad clip threshold')
 parser.add_argument('--interval', type=int, default=120, help='How often to save model (in seconds).')
 parser.add_argument('--iter', type=int, default=1e100, help='training iteration')
@@ -51,37 +53,26 @@ parser.add_argument('--iter', type=int, default=1e100, help='training iteration'
 parser.add_argument('--stream', type=int, default=4, help='job_stream')
 #launch script need "--local_rank"
 parser.add_argument("--local_rank", default=0, type=int)
-#parser.add_argument('--dist-backend', type=str, default='ddl')
 
 
 args = parser.parse_args()
 
-# deterministic = args.deterministic
-# if deterministic:
-#     torch.backends.cudnn.deterministic = True
-# else:
-#     torch.backends.cudnn.benchmark = True  # Improves overall performance in *most* cases
+deterministic = args.deterministic
+if deterministic:
+    torch.backends.cudnn.deterministic = True
+else:
+    torch.backends.cudnn.benchmark = True  # Improves overall performance in *most* cases
 
-# if not os.path.exists(args.save_path):
-#     os.makedirs(args.save_path)
+if not os.path.exists(args.save_path):
+    os.makedirs(args.save_path)
 
 
-def run(args):
+def run():
 
-    # world_size, rank = None, None
-    # if args.dist_backend in ['mpi', 'ddl']:
-    #     lrank = int(os.getenv('OMPI_COMM_WORLD_LOCAL_RANK'))
-    #     dist.init_process_group(backend=args.dist_backend, init_method='env://')
-    #     world_size = dist.get_world_size()
-    #     rank = dist.get_rank()
-    #     args.distributed = True
-    
-    # device = torch.device("cuda:{}".format(lrank))
-    # cudnn.benchmark = True
-    # torch.cuda.set_device(args.local_rank)
-    
-    # # will read env master_addr master_port world_size
     cudnn.benchmark = True
+    torch.cuda.set_device(args.local_rank)
+    
+    # will read env master_addr master_port world_size
     torch.distributed.init_process_group(backend='nccl', init_method="env://")
     args.world_size = dist.get_world_size()
     args.rank = dist.get_rank()
@@ -93,19 +84,19 @@ def run(args):
     input_size_r = list(args.input_size)
     delta_r = list(args.delta)
 
-    # path = args.log_save_path + "model_log_fov:{}_delta:{}_depth:{}".format(input_size_r[0],delta_r[0],args.depth)
-    # filesize = os.path.getsize(path)
-    # if filesize == 0:
+    path = args.log_save_path + "model_log_fov:{}_delta:{}_depth:{}".format(input_size_r [0],delta_r[0],args.depth)
+    filesize = os.path.getsize(path)
+    if filesize == 0:
 
-    #     f = open(path, 'wb')
-    #     data_start = {'chris': "xtx"}
-    #     pickle.dump(data_start, f)
-    #     f.close()
-    # else:
-    #     f = open(path, 'rb')
-    #     data = pickle.load(f)
-    #     resume_iter = len(data.keys())-1
-    #     f.close()
+        f = open(path, 'wb')
+        data_start = {'chris': "xtx"}
+        pickle.dump(data_start, f)
+        f.close()
+    else:
+        f = open(path, 'rb')
+        data = pickle.load(f)
+        resume_iter = len(data.keys())-1
+        f.close()
 
 
     """model_construction"""
@@ -113,15 +104,14 @@ def run(args):
     model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
     model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank], find_unused_parameters=True)
 
-    torch.cuda.set_enabled_lms(True)
+
     """data_load"""
     if args.resume is not None:
-        #model.load_state_dict(torch.load(args.resume), map_location=torch.device('cpu'))
-        model.load_state_dict(torch.load(args.resum), map_location=lambda storage, loc: storage)
+        model.load_state_dict(torch.load(args.resume))
 
 
     abs_path_training_data = args.train_data_dir
-    entries_train_data = Path(abs_path_training_data)
+    entries_train_data = Path(abs_path_training_data )
     files_train_data = []
 
     for entry in entries_train_data.iterdir():
@@ -179,11 +169,11 @@ def run(args):
 
         t_curr = time.time()
 
-        #labels = labels.cuda()
+        labels = labels.cuda(non_blocking=True)
 
         torch_seed = torch.from_numpy(seeds).cuda(non_blocking=True)
         input_data = torch.cat([images, torch_seed], dim=1)
-        #input_data = Variable(input_data.to(device))
+        input_data = Variable(input_data.cuda(non_blocking=True))
 
         logits = model(input_data)
         updated = torch_seed + logits
@@ -246,26 +236,25 @@ def run(args):
                 precision * 100, recall * 100, accuracy * 100))
 
 
-            # path = args.log_save_path + "model_log_fov:{}_delta:{}_depth:{}".format(input_size_r [0],delta_r[0],args.depth)
-            # model_eval = "precision#" + str('%.4f' % (precision * 100)) + "#recall#" + str('%.4f' % (recall * 100)) + "#accuracy#" + str('%.4f' % (accuracy * 100))
+            path = args.log_save_path + "model_log_fov:{}_delta:{}_depth:{}".format(input_size_r [0],delta_r[0],args.depth)
+            model_eval = "precision#" + str('%.4f' % (precision * 100)) + "#recall#" + str('%.4f' % (recall * 100)) + "#accuracy#" + str('%.4f' % (accuracy * 100))
 
-            # f_l = open(path, 'rb')
-            # data = pickle.load(f_l)
+            f_l = open(path, 'rb')
+            data = pickle.load(f_l)
 
-            # key =  cnt/args.save_interval + resume_iter
-            # data[key] = model_eval
+            key =  cnt/args.save_interval + resume_iter
+            data[key] = model_eval
 
-            # f_o = open(path, 'wb')
-            # pickle.dump(data, f_o)
+            f_o = open(path, 'wb')
+            pickle.dump(data, f_o)
 
-            # f_o.close()
-            # f_l.close()
+            f_o.close()
+            f_l.close()
 
 
 if __name__ == "__main__":
     seed = int(time.time())
     random.seed(seed)
     time1 = time.time()
-    args = parser.parse_args()
-    run(args)
+    run()
     print("run time:", time.time() - time1)
