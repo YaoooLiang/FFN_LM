@@ -102,7 +102,7 @@ def run(args):
     torch.cuda.set_enabled_lms(True)
     """data_load"""
     if args.resume is not None:
-        model.load_state_dict(torch.load(args.resume), map_location=torch.device('cpu'))
+        model.load_state_dict(torch.load(args.resume))
 
 
     abs_path_training_data = args.train_data_dir
