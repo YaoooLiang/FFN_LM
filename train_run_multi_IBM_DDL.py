@@ -28,7 +28,7 @@ parser.add_argument('--deterministic', action='store_true',
     help='Run in fully deterministic mode (at the cost of execution speed).')
 
 parser.add_argument('-train_data', '--train_data_dir', type=str, default='/home/xiaotx/2017EXBB/train_data/thick_dense_sparse_coord_d/', help='training data')
-parser.add_argument('-b', '--batch_size', type=int, default=8, help='training batch size')
+parser.add_argument('-b', '--batch_size', type=int, default=6, help='training batch size')
 #parser.add_argument('--lr', type=float, default=1e-4, help='training learning rate')
 parser.add_argument('--gamma', type=float, default=0.9, help='multiplicative factor of learning rate decay')
 #parser.add_argument('--step', type=int, default=1e4*2, help='adjust learning rate every step')
