@@ -59,26 +59,6 @@ if not os.path.exists(args.save_path):
 
 def run():
 
-    global resume_iter
-    """model_log"""
-    input_size_r = list(args.input_size)
-    delta_r = list(args.delta)
-
-    path = args.log_save_path + "model_log_fov:{}_delta:{}_depth:{}".format(input_size_r [0],delta_r[0],args.depth)
-
-    filesize = os.path.getsize(path)
-    if filesize == 0:
-
-        f = open(path, 'wb')
-        data_start = {'chris': "xtx"}
-        pickle.dump(data_start, f)
-        f.close()
-    else:
-        f = open(path, 'rb')
-        data = pickle.load(f)
-        resume_iter = len(data.keys())-1
-        f.close()
-
 
     """model_construction"""
     model = FFN(in_channels=4, out_channels=1, input_size=args.input_size, delta=args.delta, depth=args.depth).cuda()
@@ -155,7 +135,7 @@ def run():
         loss = F.binary_cross_entropy_with_logits(updated, labels)
         loss.backward()
 
-        torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
+        #torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
         optimizer.step()
         
         
@@ -208,20 +188,7 @@ def run():
                 precision * 100, recall * 100, accuracy * 100))
 
 
-            path = args.log_save_path + "model_log_fov:{}_delta:{}_depth:{}".format(input_size_r [0],delta_r[0],args.depth)
-            model_eval = "precision#" + str('%.4f' % (precision * 100)) + "#recall#" + str('%.4f' % (recall * 100)) + "#accuracy#" + str('%.4f' % (accuracy * 100))
-
-            f_l = open(path, 'rb')
-            data = pickle.load(f_l)
-
-            key =  cnt/args.save_interval + resume_iter
-            data[key] = model_eval
-
-            f_o = open(path, 'wb')
-            pickle.dump(data, f_o)
-
-            f_o.close()
-            f_l.close()
+       
 
 
 if __name__ == "__main__":
