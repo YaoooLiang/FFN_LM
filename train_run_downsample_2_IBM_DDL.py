@@ -1,34 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@ChrisXtx 
-Learn Git and GitHub without any code!
-Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
-
-
-ChrisXtx
-/
-FFN_LM
-2
-01
- Code
- Issues 0
- Pull requests 2 Actions
- Projects 0
- Wiki
- Security 0
- Insights
- Settings
-FFN_LM/train_run_multi_IBM_DDL.py /
-@ChrisXtx ChrisXtx Update train_run_multi_IBM_DDL.py
-0066c72 4 hours ago
-242 lines (183 sloc)  9.31 KB
-  
 import argparse
 import time
 import random
@@ -271,15 +240,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     run(args)
     print("run time:", time.time() - time1)
-© 2020 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
