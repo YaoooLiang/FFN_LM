@@ -50,7 +50,7 @@ parser.add_argument('--interval', type=int, default=120, help='How often to save
 parser.add_argument('--iter', type=int, default=1e100, help='training iteration')
 
 
-parser.add_argument('--stream', type=int, default=4, help='job_stream')
+parser.add_argument('--stream', type=str, default='nccl_test', help='job_stream')
 #launch script need "--local_rank"
 parser.add_argument("--local_rank", default=0, type=int)
 
