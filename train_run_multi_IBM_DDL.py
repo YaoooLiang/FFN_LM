@@ -176,7 +176,7 @@ def run(args):
         loss = F.binary_cross_entropy_with_logits(updated, labels)
         loss.backward()
 
-        torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
+        #torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
         optimizer.step()
         
         
