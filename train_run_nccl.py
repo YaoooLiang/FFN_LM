@@ -70,6 +70,8 @@ if not os.path.exists(args.save_path):
 def run():
 
     cudnn.benchmark = True
+    local_rank = int(os.environ['SLURM_LOCALID'])
+    args.local_rank = local_rank
     torch.cuda.set_device(args.local_rank)
     
     # will read env master_addr master_port world_size
