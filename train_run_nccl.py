@@ -69,16 +69,28 @@ if not os.path.exists(args.save_path):
 
 def run():
 
-    cudnn.benchmark = True
-    torch.cuda.set_device(args.local_rank)
+#     cudnn.benchmark = True
+#     torch.cuda.set_device(args.local_rank)
     
-    # will read env master_addr master_port world_size
-    torch.distributed.init_process_group(backend='nccl', init_method="env://")
-    args.world_size = dist.get_world_size()
-    args.rank = dist.get_rank()
-    # args.local_rank = int(os.environ.get('LOCALRANK', args.local_rank))
-    args.total_batch_size = (args.batch_size) * dist.get_world_size()
-    
+#     # will read env master_addr master_port world_size
+#     torch.distributed.init_process_group(backend='nccl', init_method="env://")
+#     args.world_size = dist.get_world_size()
+#     args.rank = dist.get_rank()
+#     # args.local_rank = int(os.environ.get('LOCALRANK', args.local_rank))
+#     args.total_batch_size = (args.batch_size) * dist.get_world_size()
+    def dist_init(host_addr, rank, local_rank, world_size, port=23456):
+        host_addr_full = 'tcp://' + host_addr + ':' + str(port)
+        torch.distributed.init_process_group("nccl", init_method=host_addr_full,
+                                         rank=rank, world_size=world_size)
+        num_gpus = torch.cuda.device_count()
+        torch.cuda.set_device(local_rank)
+        assert torch.distributed.is_initialized()
+
+    args.rank = int(os.environ['SLURM_PROCID'])
+    args.local_rank = int(os.environ['SLURM_LOCALID'])
+    args.world_size = int(os.environ['SLURM_NTASKS'])
+    args.ip = get_ip(os.environ['SLURM_STEP_NODELIST'])
+    dist_init(args.ip, args.rank, args.local_rank, args.world_size)
     global resume_iter
     """model_log"""
     input_size_r = list(args.input_size)
