@@ -36,7 +36,7 @@ parser.add_argument('--depth', type=int, default=12, help='depth of ffn')
 parser.add_argument('--delta', default=(4, 4, 4), help='delta offset')
 parser.add_argument('--input_size', default=(39, 39, 39), help ='input size')
 
-parser.add_argument('--resume', type=str, default='/home/xiaotx/2017EXBB/model/model_fov39_delta4_downsample_2_dep12/ffn_model_fov:51_delta:15_depth:12.pth', help='resume training')
+parser.add_argument('--resume', type=str, default='/home/xiaotx/2017EXBB/model/model_fov39_delta4_downsample_2_dep12/ffn_model_fov:39_delta:4_depth:12.pth', help='resume training')
 parser.add_argument('--save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_fov39_delta4_downsample_2_dep12/', help='model save path')
 parser.add_argument('--save_interval', type=str, default=1000, help='model save interval')
 parser.add_argument('--log_save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_log/', help='model_log save path')
