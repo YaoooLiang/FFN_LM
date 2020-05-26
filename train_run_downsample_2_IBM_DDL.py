@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser(description='Train a network.')
 parser.add_argument('--deterministic', action='store_true',
     help='Run in fully deterministic mode (at the cost of execution speed).')
 
-parser.add_argument('-train_data', '--train_data_dir', type=str, default='/home/xiaotx/2017EXBB/train_data_downsample_2/', help='training data')
+parser.add_argument('-train_data', '--train_data_dir', type=str, default='/home/xiaotx/2017EXBB/train_data/train_data_downsample_2/', help='training data')
 parser.add_argument('-b', '--batch_size', type=int, default=8, help='training batch size')
 parser.add_argument('--lr', type=float, default=1e-3, help='training learning rate')
 parser.add_argument('--gamma', type=float, default=0.9, help='multiplicative factor of learning rate decay')
@@ -36,8 +36,8 @@ parser.add_argument('--depth', type=int, default=12, help='depth of ffn')
 parser.add_argument('--delta', default=(4, 4, 4), help='delta offset')
 parser.add_argument('--input_size', default=(39, 39, 39), help ='input size')
 
-parser.add_argument('--resume', type=str, default=None, help='resume training')
-parser.add_argument('--save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_downsample_2/', help='model save path')
+parser.add_argument('--resume', type=str, default='/home/xiaotx/2017EXBB/model/model_fov39_delta4_downsample_2_dep12/ffn_model_fov:51_delta:15_depth:12.pth', help='resume training')
+parser.add_argument('--save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_fov39_delta4_downsample_2_dep12/', help='model save path')
 parser.add_argument('--save_interval', type=str, default=1000, help='model save interval')
 parser.add_argument('--log_save_path', type=str, default='/home/xiaotx/2017EXBB/model/model_log/', help='model_log save path')
 
@@ -176,7 +176,7 @@ def run(args):
         loss = F.binary_cross_entropy_with_logits(updated, labels)
         loss.backward()
 
-        torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
+        #torch.nn.utils.clip_grad_value_(model.parameters(), args.clip_grad_thr)
         optimizer.step()
         
         
